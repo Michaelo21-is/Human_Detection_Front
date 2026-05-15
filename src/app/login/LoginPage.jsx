@@ -16,7 +16,9 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post(`${API_BASE_URL}/api/auth/login`, form);
+      await axios.post(`${API_BASE_URL}/api/auth/login`, form,{
+        withCredentials: true
+      });
       router.push("/");
     } catch (e) {
       if (e?.response?.status === 401) {

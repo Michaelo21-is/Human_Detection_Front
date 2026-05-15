@@ -19,7 +19,9 @@ export default function SignUpPage(){
         setLoading(true);
         try{
             await axios.post(`${API_BASE_URL}/api/auth/register`,
-                form
+                form,{
+                    withCredentials: true,
+                }
             );
             console.log("successfully saved user")
             router.push("/");
