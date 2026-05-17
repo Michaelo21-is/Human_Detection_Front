@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-
 export default function CameraPage({ sessionId }) {
   const wRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const intervalRef = useRef(null);
+
 
   async function connectWebSocket() {
     const ws = new WebSocket(
@@ -21,8 +21,12 @@ export default function CameraPage({ sessionId }) {
       }, 1000);
     };
 
-    ws.onmessage = (event) => {
+    ws.onmessage = async (event) => {
       console.log("Message from server:", event.data);
+      const response = JSON.parse(event.data);
+      if(response.success === true){
+        await Speak(response.data.name?.[0], response.data.whereIsKnownFrom?.[0])
+      }
     };
 
     ws.onclose = () => {
@@ -87,6 +91,31 @@ export default function CameraPage({ sessionId }) {
       0.85
     );
   }
+  async function Speak(name, whereIsKnownFrom){
+      if (!name || !whereIsKnownFrom) return;
+     const response = await fetch("/api/speech", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        whereIsKnownFrom,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log("failed to generate speech: ", errorText);
+      return;
+    }
+
+    const audioBlob = await response.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+
+    const audio = new Audio(audioUrl);
+    audio.play();
+    }
 
   useEffect(() => {
     async function initializeComponent() {
