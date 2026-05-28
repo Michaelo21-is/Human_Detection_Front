@@ -2,17 +2,11 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    const { name, whereIsKnownFrom } = await req.json();
-
-    const voiceId = process.env.VOICE_ID;
+    const { voiceId } = await req.json();
+    
     const apiKey = process.env.ELEVEN_LABELS_API_KEY;
 
-    if (!name || !whereIsKnownFrom) {
-      return NextResponse.json(
-        { message: "Missing name or whereIsKnownFrom" },
-        { status: 400 }
-      );
-    }
+   
 
     if (!voiceId || !apiKey) {
       return NextResponse.json(
@@ -21,7 +15,7 @@ export async function POST(req) {
       );
     }
 
-    const text = `${name} מוכר מ${whereIsKnownFrom} והוא נמצא לפניך`;
+    const text = "קול זה נשמר בתור הקול המעודף";
 
     const response = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,

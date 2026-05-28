@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-export default function CameraPage({ sessionId }) {
+export default function CameraPage({ sessionId, voiceId }) {
   const wRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -25,7 +25,7 @@ export default function CameraPage({ sessionId }) {
       console.log("Message from server:", event.data);
       const response = JSON.parse(event.data);
       if(response.success === true){
-        await Speak(response.data.name?.[0], response.data.whereIsKnownFrom?.[0])
+        await SpeakWherePersonIsKnownFromAndWhatIsName(response.data.name?.[0], response.data.whereIsKnownFrom?.[0])
       }
     };
 
@@ -91,9 +91,9 @@ export default function CameraPage({ sessionId }) {
       0.85
     );
   }
-  async function Speak(name, whereIsKnownFrom){
+  async function speakPersonInfo(name, whereIsKnownFrom){
       if (!name || !whereIsKnownFrom) return;
-     const response = await fetch("/api/speech", {
+     const response = await fetch("/api/speech-person-info", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -101,6 +101,7 @@ export default function CameraPage({ sessionId }) {
       body: JSON.stringify({
         name,
         whereIsKnownFrom,
+        voiceId
       }),
     });
 
@@ -116,6 +117,7 @@ export default function CameraPage({ sessionId }) {
     const audio = new Audio(audioUrl);
     audio.play();
     }
+
 
   useEffect(() => {
     async function initializeComponent() {
@@ -143,6 +145,7 @@ export default function CameraPage({ sessionId }) {
       }
     };
   }, []);
+  
 
   return (
     <div className="fixed inset-0 bg-black">
