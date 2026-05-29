@@ -25,7 +25,7 @@ export default function CameraPage({ sessionId, voiceId }) {
       console.log("Message from server:", event.data);
       const response = JSON.parse(event.data);
       if(response.success === true){
-        await SpeakWherePersonIsKnownFromAndWhatIsName(response.data.name?.[0], response.data.whereIsKnownFrom?.[0])
+        await speakPersonInfo(response.data.name?.[0], response.data.whereIsKnownFrom?.[0])
       }
     };
 
@@ -93,6 +93,10 @@ export default function CameraPage({ sessionId, voiceId }) {
   }
   async function speakPersonInfo(name, whereIsKnownFrom){
       if (!name || !whereIsKnownFrom) return;
+      if (!voiceId) {
+      console.log("No voiceId yet");
+      return;
+    }
      const response = await fetch("/api/speech-person-info", {
       method: "POST",
       headers: {

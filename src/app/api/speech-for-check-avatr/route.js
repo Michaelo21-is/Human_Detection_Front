@@ -13,7 +13,7 @@ export async function POST(req) {
       );
     }
 
-    const text = `$שלום כאן {avatarName} ןאני אשמח אם תבחר בי`;
+    const text = `שלום כאן ${avatarName} ואני אשמח אם תבחר בי`;
 
     const response = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
