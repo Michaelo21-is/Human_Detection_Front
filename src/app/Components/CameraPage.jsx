@@ -1,43 +1,76 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-export default function CameraPage({ sessionId, voiceId }) {
+import { useEffect, useRef, useState } from "react";
+
+export default function CameraPage({ sessionId, voiceId, wsRef }) {
   const wRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const intervalRef = useRef(null);
-
+  const streamRef = useRef(null);
 
   async function connectWebSocket() {
-    const ws = new WebSocket(
+    const socket = new WebSocket(
       `ws://localhost:8000/api/llm/check-face?session_id=${sessionId}`
     );
 
-    ws.onopen = () => {
+    wRef.current = socket;
+
+    if (wsRef) {
+      wsRef.current = socket;
+    }
+
+    socket.onopen = () => {
       console.log("WebSocket connected");
-      // when the web socket is open i am sending every 1 sec image to the backend  
+
       intervalRef.current = setInterval(() => {
         captureAndSend();
-      }, 1000);
+      }, 1500);
     };
 
-    ws.onmessage = async (event) => {
+    socket.onmessage = async (event) => {
       console.log("Message from server:", event.data);
+
       const response = JSON.parse(event.data);
-      if(response.success === true){
-        await speakPersonInfo(response.data.name?.[0], response.data.whereIsKnownFrom?.[0])
+
+      if (response.success === true) {
+        await speakPersonInfo(
+          response.data.name?.[0],
+          response.data.whereIsKnownFrom?.[0]
+        );
       }
     };
 
-    ws.onclose = () => {
-      console.log("websocket closed");
+    socket.onclose = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+
+       if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => {
+          track.stop();
+        });
+
+        streamRef.current = null;
+      }
+
+      // לעצור גם את ה-stream שמחובר ל-video עצמו
+      if (videoRef.current?.srcObject) {
+        const stream = videoRef.current.srcObject;
+
+        stream.getTracks().forEach((track) => {
+          track.stop();
+        });
+
+        videoRef.current.pause();
+        videoRef.current.srcObject = null;
+        videoRef.current.load();
+      }
     };
 
-    ws.onerror = (e) => {
+    socket.onerror = (e) => {
       console.log("WebSocket error:", e);
     };
-
-    wRef.current = ws;
   }
 
   async function enableCamera() {
@@ -45,11 +78,11 @@ export default function CameraPage({ sessionId, voiceId }) {
       console.log("Trying to open camera...");
 
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: false,
+      video: true,
+      audio: false,
       });
 
-      console.log("Camera stream:", stream);
+      streamRef.current = stream;
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -59,26 +92,24 @@ export default function CameraPage({ sessionId, voiceId }) {
       console.log("Camera error:", e);
     }
   }
-
+  
   function captureAndSend() {
-    console.log("sendig image");
+
     if (!videoRef.current || !canvasRef.current || !wRef.current) return;
 
     if (wRef.current.readyState !== WebSocket.OPEN) return;
 
+    console.log("sending image");
+
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    // give me access to paint in the canvas which mean bring me access to take a photo
     const ctx = canvas.getContext("2d");
 
-    // adjusting the canvas to fit the video resolution
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    
-    // take the image
+
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // convert the canvas to image bytes format
     canvas.toBlob(
       (blob) => {
         if (!blob) return;
@@ -91,13 +122,16 @@ export default function CameraPage({ sessionId, voiceId }) {
       0.85
     );
   }
-  async function speakPersonInfo(name, whereIsKnownFrom){
-      if (!name || !whereIsKnownFrom) return;
-      if (!voiceId) {
+
+  async function speakPersonInfo(name, whereIsKnownFrom) {
+    if (!name || !whereIsKnownFrom) return;
+
+    if (!voiceId) {
       console.log("No voiceId yet");
       return;
     }
-     const response = await fetch("/api/speech-person-info", {
+
+    const response = await fetch("/api/speech-person-info", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -105,7 +139,7 @@ export default function CameraPage({ sessionId, voiceId }) {
       body: JSON.stringify({
         name,
         whereIsKnownFrom,
-        voiceId
+        voiceId,
       }),
     });
 
@@ -120,10 +154,10 @@ export default function CameraPage({ sessionId, voiceId }) {
 
     const audio = new Audio(audioUrl);
     audio.play();
-    }
-
+  }
 
   useEffect(() => {
+
     async function initializeComponent() {
       await enableCamera();
       await connectWebSocket();
@@ -131,25 +165,7 @@ export default function CameraPage({ sessionId, voiceId }) {
 
     initializeComponent();
 
-    return () => {
-      console.log("camera cleanup");
-
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-
-      if (wRef.current) {
-        wRef.current.close();
-      }
-
-      if (videoRef.current?.srcObject) {
-        const stream = videoRef.current.srcObject;
-        stream.getTracks().forEach((track) => track.stop());
-        videoRef.current.srcObject = null;
-      }
-    };
   }, []);
-  
 
   return (
     <div className="fixed inset-0 bg-black">

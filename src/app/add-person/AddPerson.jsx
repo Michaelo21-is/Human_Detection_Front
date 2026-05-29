@@ -47,8 +47,8 @@ export default function AddPersonPage(){
     }
     }
     return(<div className="flex min-h-screen items-center justify-center bg-white px-4">
-        <div className="w-full max-w-md rounded-xl border border-black bg-white p-8 shadow-sm">
-            <h1 className="mb-6 text-center text-2xl font-bold text-black">הוספת אדם מוכר</h1>
+            <div className="w-full max-w-md rounded-xl border border-black bg-white p-8 shadow-sm">
+                <h1 className="mb-6 text-center text-2xl font-bold text-black">הוספת אדם מוכר</h1>
 
             <form className="space-y-4" onSubmit={handleOnSubmit}>
             <div>
