@@ -135,12 +135,12 @@ export default function ChangeVoice() {
             transition-all duration-200
             ${
               currentVoiceId === voiceId
-                ? "bg-gray-100 border-black shadow-xl scale-105"
+                ? "bg-white border-black shadow-md scale-105"
                 : "bg-white border-gray-300 hover:bg-gray-50 hover:border-gray-400 hover:shadow-md hover:scale-105"
             }`}
           onClick={() => handleOnVoiceClick(voiceId, avatarName)}
         >
-          <div className="relative w-[150px] h-[200px] overflow-hidden bg-gray-200">
+          <div className="relative w-[110px] h-[150px] sm:w-[150px] sm:h-[200px] overflow-hidden bg-gray-200">
             <Image
               src={imagePath[avatarName]}
               alt={avatarName}
