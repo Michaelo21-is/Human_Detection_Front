@@ -1,4 +1,4 @@
-import AddPersonPage from "./Addperson";
+import AddPersonPage from "./AddPerson";
 export default function AddPerson(){
     return (
         <div>
