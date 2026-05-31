@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import CameraPage from "./CameraPage";
 
-export default function HomePage({ sessionId }) {
+export default function HomePage() {
   const router = useRouter();
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const wsRef = useRef(null);
@@ -59,8 +59,8 @@ export default function HomePage({ sessionId }) {
         שינוי קול
       </button>
 
-      {userVoiceId && sessionId && (
-    <CameraPage sessionId={sessionId} voiceId={userVoiceId} wsRef={wsRef} />
+      {userVoiceId && (
+    <CameraPage  voiceId={userVoiceId} wsRef={wsRef} />
       )}
     </div>
   );

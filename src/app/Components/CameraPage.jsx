@@ -14,7 +14,7 @@ export default function CameraPage({ sessionId, voiceId, wsRef }) {
     const wsBaseUrl = API_BASE_URL.replace("https://", "wss://");
 
     const socket = new WebSocket(
-      `${wsBaseUrl}/api/llm/check-face?session_id=${sessionId}`
+      `${wsBaseUrl}/api/llm/check-face`
     );
 
     wRef.current = socket;
