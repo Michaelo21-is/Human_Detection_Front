@@ -59,9 +59,9 @@ export default function HomePage({ sessionId }) {
         שינוי קול
       </button>
 
-      {userVoiceId && (
-        <CameraPage sessionId={sessionId} voiceId={userVoiceId} wsRef = {wsRef}/>
-        )}
+      {userVoiceId && sessionId && (
+    <CameraPage sessionId={sessionId} voiceId={userVoiceId} wsRef={wsRef} />
+      )}
     </div>
   );
 }
