@@ -110,8 +110,8 @@ export default function CameraPage({ sessionId, voiceId, wsRef }) {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    canvas.width = 320;
-    canvas.height = 320;
+    canvas.width = 640;
+    canvas.height = 640;
 
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
