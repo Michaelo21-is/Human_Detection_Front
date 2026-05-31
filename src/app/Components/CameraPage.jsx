@@ -109,8 +109,8 @@ export default function CameraPage({ sessionId, voiceId, wsRef }) {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    canvas.width = 320;
+    canvas.height = 320;
 
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -123,7 +123,7 @@ export default function CameraPage({ sessionId, voiceId, wsRef }) {
         }
       },
       "image/jpeg",
-      0.85
+      0.6
     );
   }
 
