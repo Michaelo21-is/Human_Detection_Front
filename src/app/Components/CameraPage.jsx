@@ -45,6 +45,7 @@ export default function CameraPage({ sessionId, voiceId, wsRef }) {
     };
 
     socket.onclose = () => {
+      console.log("web socket closed")
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
