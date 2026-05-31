@@ -81,11 +81,12 @@ export default function CameraPage({ sessionId, voiceId, wsRef }) {
     try {
       console.log("Trying to open camera...");
 
-      const stream = await navigator.mediaDevices.getUserMedia({
-      video: true,
-      audio: false,
+     const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: "environment" },
+        },
+        audio: false,
       });
-
       streamRef.current = stream;
 
       if (videoRef.current) {
