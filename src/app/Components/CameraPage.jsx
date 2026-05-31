@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 export default function CameraPage({ sessionId, voiceId, wsRef }) {
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
   const wRef = useRef(null);
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -10,8 +11,10 @@ export default function CameraPage({ sessionId, voiceId, wsRef }) {
   const streamRef = useRef(null);
 
   async function connectWebSocket() {
+    const wsBaseUrl = API_BASE_URL.replace("https://", "wss://");
+
     const socket = new WebSocket(
-      `ws://localhost:8000/api/llm/check-face?session_id=${sessionId}`
+      `${wsBaseUrl}/api/llm/check-face?session_id=${sessionId}`
     );
 
     wRef.current = socket;
